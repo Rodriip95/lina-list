@@ -1,65 +1,67 @@
-import { Pressable, StatusBar, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import { useAuthRequest } from 'expo-auth-session/providers/google';
-import { RootStackParamList } from '../navigation/RootNavigation';
-import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { ANDROID_CLIENT_ID } from '@env';
+import {
+  ActivityIndicator,
+  Pressable,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import React from "react";
+import { useGoogleLogin } from "../hook/useGoogleLogin";
 
 const LoginScreen = () => {
+  const { promptAsync, loading } = useGoogleLogin();
 
-    const navigation = useNavigation<NavigationProp<RootStackParamList>>()
-
-    const [request, response, promptAsync] = useAuthRequest(
-      {
-        androidClientId: ANDROID_CLIENT_ID
-      }
-    )
-  
-    const onPress = () => {
-      promptAsync().catch((error) => {
-        console.error('Error during Google authentication:', error);
-      }
-      );
-    };
-
-
-    React.useEffect(() => {
-      if (response?.type === 'success') {
-        const { authentication } = response.params;
-        console.log('Authentication successful:', authentication);
-        navigation.navigate('HomeScreen');
-      } else if (response?.type === 'error') {
-        console.error('Authentication error:', response.params.error);
-      }
-    }, [response]);
-
+  const handlePress = () => {
+    promptAsync().catch((error) => {
+      console.error("Error during Google login:", error);
+    });
+  };
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="default" />
-      <Text style={{color: 'red'}}>Open!</Text>
+      {loading && (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(255, 255, 255, 0.8)",
+            zIndex: 1,
+            elevation: 5, // For Android shadow
+          }}
+        >
+          <ActivityIndicator size="large" color="#000" />
+        </View>
+      )}
+      <Text style={{ color: "red" }}>Open!</Text>
       <Pressable
-        onPress={onPress}
+        onPress={handlePress}
         style={({ pressed }) => [
           {
-            backgroundColor: pressed ? 'blue' : 'green',
+            backgroundColor: pressed ? "blue" : "green",
             padding: 10,
             borderRadius: 5,
           },
         ]}
       >
-        <Text style={{ color: 'white' }}>Login with Google</Text>
+        <Text style={{ color: "white" }}>Login with Google</Text>
       </Pressable>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
-export default LoginScreen
+export default LoginScreen;

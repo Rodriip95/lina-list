@@ -5,7 +5,9 @@ import HomeScreen from '../screens/HomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 
 export type RootStackParamList = {
-    HomeScreen: undefined;
+    HomeScreen: {
+        authentication: any;
+    };
     LoginScreen: undefined;
 };
 
