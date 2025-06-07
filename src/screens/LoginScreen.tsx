@@ -1,5 +1,7 @@
 import {
   ActivityIndicator,
+  Image,
+  ImageBackground,
   Pressable,
   StatusBar,
   StyleSheet,
@@ -8,60 +10,64 @@ import {
 } from "react-native";
 import React from "react";
 import { useGoogleLogin } from "../hook/useGoogleLogin";
+import Loader from "../components/Loader";
+import Icon from "../components/Icon";
 
 const LoginScreen = () => {
+  const [loadingComp, setLoading] = React.useState(false);
   const { promptAsync, loading } = useGoogleLogin();
 
   const handlePress = () => {
+    setLoading(true);
     promptAsync().catch((error) => {
-      console.error("Error during Google login:", error);
+      console.error("Error during Google login:", error)
+    }).finally(() => {
+      setLoading(false);
     });
   };
 
   return (
+    <ImageBackground
+      source={require("../../assets/resources/background.png")}
+      style={styles.background}
+    >
     <View style={styles.container}>
-      <StatusBar barStyle="default" />
-      {loading && (
-        <View
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "rgba(255, 255, 255, 0.8)",
-            zIndex: 1,
-            elevation: 5, // For Android shadow
-          }}
-        >
-          <ActivityIndicator size="large" color="#000" />
-        </View>
+      <StatusBar barStyle="default"/>
+      {loading || loadingComp && (
+        <Loader/>
       )}
-      <Text style={{ color: "red" }}>Open!</Text>
+      <View style={{ marginBottom: 40, alignItems: "center" }}>
+      <Icon name="logo" />
+      </View>
       <Pressable
         onPress={handlePress}
-        style={({ pressed }) => [
+        style={() => [
           {
-            backgroundColor: pressed ? "blue" : "green",
-            padding: 10,
-            borderRadius: 5,
+            backgroundColor: "#fff",
+            paddingVertical: 10,
+            paddingHorizontal: 32,
+            borderRadius: 32,
           },
         ]}
       >
-        <Text style={{ color: "white" }}>Login with Google</Text>
+        <View style={{ flexDirection: "row", alignItems: "center"}}>
+          <Icon name="google" width={24} height={24} />
+          <Text style={{ color: "#000", marginLeft: 10 }}>Ingresar con Google</Text>
+        </View>
       </Pressable>
     </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+  },
+  background: {
+    flex: 1,
   },
 });
 export default LoginScreen;
